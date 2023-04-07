@@ -1,6 +1,8 @@
 import discord
 import os  # default module
+from dotenv import load_dotenv
 
+load_dotenv()  # load all the variables from the env file
 bot = discord.Bot()
 
 
@@ -14,4 +16,4 @@ async def hello(ctx):
     await ctx.respond("Hey!")
 
 
-bot.run('MTA5Mzk2NzIzMTk0NTI4NTYzMg.GD-xfj.7mWQC_29XxXxOxOi0qduOqTqpSS69dKOkWKxpo')  # run the bot with the token
+bot.run(os.getenv('TOKEN'))  # run the bot with the token
