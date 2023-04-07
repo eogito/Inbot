@@ -1,5 +1,5 @@
 import discord
-import os  # default module
+import os  # default module os
 
 bot = discord.Bot()
 
