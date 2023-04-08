@@ -8,12 +8,17 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+# Date and time
+from datetime import datetime, timezone, timedelta
+# Task scheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
 
 
+# Gets credentials if user is not already logged in
 def get_credentials():
     creds = None
 
@@ -35,7 +40,8 @@ def get_credentials():
     return creds
 
 
-def readEmail():
+# Reads all unread emails and marks them as read
+def read_email():
     creds = get_credentials()
     # Call the Gmail API
     service = build('gmail', 'v1', credentials=creds)
@@ -44,9 +50,7 @@ def readEmail():
 
     try:
         messages = results.get('messages', [])
-        if not messages:
-            print("You have no new messages.")
-        else:
+        if messages:
             for message in messages[::-1]:
                 msg = service.users().messages().get(userId='me', id=message['id']).execute()
                 # Mark all emails as read
@@ -76,4 +80,13 @@ def readEmail():
         print(f'An error occurred: {error}')
 
 
-readEmail()
+# Set up a scheduler to run the email check every minute
+scheduler = BlockingScheduler()
+
+# Test
+creds = get_credentials()
+service = build('gmail', 'v1', credentials=creds)
+
+if creds:
+    scheduler.add_job(read_email, 'interval', seconds=1)
+    scheduler.start()
