@@ -10,37 +10,39 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly',
+          'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
 
 
-def main():
-    """Shows basic usage of the Gmail API.
-    Lists the user's Gmail labels.
-    """
+def get_credentials():
     creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+
+    # Check if the token file exists
     if os.path.exists('token.json'):
+        # Load the saved credentials from the file
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
+
+    # If the credentials don't exist or are invalid, prompt the user to log in
     if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
+        flow = InstalledAppFlow.from_client_secrets_file(
+            'credentials.json', SCOPES)
+        creds = flow.run_local_server(port=0)
+
+        # Save the credentials to the token file for future use
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
 
-    try:
-        # Call the Gmail API
-        service = build('gmail', 'v1', credentials=creds)
-        results = service.users().messages().list(maxResults=500, userId='me', labelIds=['INBOX'], q='is:unread').execute()
-        messages = results.get('messages', [])
+    return creds
 
+
+def readEmail():
+    creds = get_credentials()
+    # Call the Gmail API
+    service = build('gmail', 'v1', credentials=creds)
+    results = service.users().messages().list(maxResults=500, userId='me', labelIds=['INBOX'], q='is:unread').execute()
+
+    try:
+        messages = results.get('messages', [])
         if not messages:
             print("You have no new messages.")
         else:
@@ -64,4 +66,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    readEmail()

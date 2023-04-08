@@ -13,7 +13,9 @@ from datetime import datetime, timezone, timedelta
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
+SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly',
+          'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
+
 
 # Gets credentials if user is not already logged in
 def get_credentials():
@@ -35,6 +37,7 @@ def get_credentials():
             token.write(creds.to_json())
 
     return creds
+
 
 # Define a function to check for new emails
 def check_email():
@@ -64,6 +67,7 @@ def check_email():
         print(f'{num_unread} new messages received since {one_minute_ago}')
     except HttpError as error:
         print(f'An error occurred: {error}')
+
 
 # Set up a scheduler to run the email check every minute
 scheduler = BlockingScheduler()
