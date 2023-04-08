@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import html
 import os.path
 
 from google.auth.transport.requests import Request
@@ -37,7 +38,46 @@ def get_credentials():
 
     return creds
 
+# Reads all unread emails and marks them as read
+def read_email():
+    creds = get_credentials()
+    # Call the Gmail API
+    service = build('gmail', 'v1', credentials=creds)
+    results = service.users().messages().list(maxResults=500, userId='me', labelIds=['INBOX'],
+                                              q='is:unread').execute()
 
+    try:
+        messages = results.get('messages', [])
+        if not messages:
+            print("You have no new messages.")
+        else:
+            for message in messages[::-1]:
+                msg = service.users().messages().get(userId='me', id=message['id']).execute()
+                # Mark all emails as read
+                service.users().messages().modify(userId='me', id=message['id'],
+                                                  body={'removeLabelIds': ['UNREAD']}).execute()
+                email_data = msg['payload']['headers']
+                for values in email_data:
+                    name = values['name']
+                    if name == "From":
+                        from_name = values['value']
+                        print("You have a new message from: " + from_name)
+
+                        # Get email subject
+                        subject = ""
+                        for val in email_data:
+                            if val['name'] == "Subject":
+                                subject = val['value']
+                        if subject == "":
+                            subject = "(No Subject)"
+
+                        print("Subject:", html.unescape(subject))
+                        print(html.unescape(msg['snippet']))
+                        print('\n')
+
+    except HttpError as error:
+        # TODO(developer) - Handle errors from gmail API.
+        print(f'An error occurred: {error}')
 
 # Define a function to check for new emails
 def check_email():
@@ -59,7 +99,6 @@ def check_email():
             page_token = results.get("nextPageToken")
             if not page_token:
                 break
-        # if (prev_unread < num_unread)
         print(f'{num_unread} new messages received since {one_minute_ago}')
     except HttpError as error:
         print(f'An error occurred: {error}')
@@ -71,7 +110,7 @@ scheduler = BlockingScheduler()
 # Test
 creds = get_credentials()
 service = build('gmail', 'v1', credentials=creds)
-prev_unread = 0
+
 if creds:
-    scheduler.add_job(check_email, 'interval', seconds=1)
+    scheduler.add_job(read_email, 'interval', seconds=1)
     scheduler.start()

@@ -47,9 +47,9 @@ def readEmail():
         if not messages:
             print("You have no new messages.")
         else:
-            msg_count = 0
             for message in messages[::-1]:
                 msg = service.users().messages().get(userId='me', id=message['id']).execute()
+                # Mark all emails as read
                 service.users().messages().modify(userId='me', id=message['id'],
                                                   body={'removeLabelIds': ['UNREAD']}).execute()
                 email_data = msg['payload']['headers']
@@ -70,7 +70,6 @@ def readEmail():
                         print("Subject:", html.unescape(subject))
                         print(html.unescape(msg['snippet']))
                         print('\n')
-                msg_count += 1
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
