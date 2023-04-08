@@ -16,7 +16,6 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
 
-
 # Gets credentials if user is not already logged in
 def get_credentials():
     creds = None
@@ -39,31 +38,28 @@ def get_credentials():
     return creds
 
 
+
 # Define a function to check for new emails
 def check_email():
     now = datetime.now(timezone.utc)
     one_minute_ago = now - timedelta(seconds=1)
     query = f'after:{one_minute_ago.strftime("%Y/%m/%d %H:%M:%S")}'
 
-    creds = get_credentials()
-    service = build('gmail', 'v1', credentials=creds)
-
     try:
         page_token = None
         num_unread = 0
         while True:
             results = service.users().messages().list(
-                userId="me", q="is:unread in:inbox", labelIds=['INBOX'], maxResults=100, pageToken=page_token
+                userId="me", q="is:unread in:inbox", labelIds=['INBOX'], maxResults=500, pageToken=page_token
             ).execute()
             messages = len(results.get("messages", []))
-
-            # Print the IDs of the unread messages
             num_unread = num_unread + messages
 
             # Check if there are more pages to retrieve
             page_token = results.get("nextPageToken")
             if not page_token:
                 break
+        # if (prev_unread < num_unread)
         print(f'{num_unread} new messages received since {one_minute_ago}')
     except HttpError as error:
         print(f'An error occurred: {error}')
@@ -74,7 +70,8 @@ scheduler = BlockingScheduler()
 
 # Test
 creds = get_credentials()
-
+service = build('gmail', 'v1', credentials=creds)
+prev_unread = 0
 if creds:
     scheduler.add_job(check_email, 'interval', seconds=1)
     scheduler.start()
