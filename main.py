@@ -31,6 +31,7 @@ async def email(
 
 @bot.slash_command(name="test")
 async def command(ctx, file: discord.SlashCommandOptionType.attachment):
+    print(str(file))
     await ctx.respond(str(file))
 
 
