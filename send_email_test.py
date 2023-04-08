@@ -13,6 +13,8 @@ import base64
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
+from email.mime.base import MIMEBase
+import discord
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
@@ -38,7 +40,7 @@ def get_credentials():
 
     return creds
 
-def send_email(to, subject=None, body=None, attachment_path=None):
+def send_email(to, subject=None, body=None, attachment=None):
     creds = get_credentials()
     service = build('gmail', 'v1', credentials=creds)
 
@@ -49,11 +51,14 @@ def send_email(to, subject=None, body=None, attachment_path=None):
     message.attach(MIMEText(body))
 
     # Checks attachment path and adds attachment if specified
-    if attachment_path:
-        with open(attachment_path, 'rb') as attachment:
-            part = MIMEApplication(attachment.read(), Name=os.path.basename(attachment_path))
-            part['Content-Disposition'] = f'attachment; filename="{os.path.basename(attachment_path)}"'
-            message.attach(part)
+    if attachment:
+        file = discord.File(attachment)
+        attachment = MIMEBase('application', 'octet-stream')
+        attachment.set_payload(file.read())
+
+        filename = os.path.basename(attachment)
+        attachment.add_header('Content-Disposition', 'attachment', filename=filename)
+        message.attach(attachment)
     
     # Convert to sendable format
     raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
