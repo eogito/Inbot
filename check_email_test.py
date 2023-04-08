@@ -39,21 +39,24 @@ def get_credentials():
 # Define a function to check for new emails
 def check_email():
     now = datetime.now(timezone.utc)
-    one_minute_ago = now - timedelta(minutes=1)
+    one_minute_ago = now - timedelta(seconds=1)
     query = f'after:{one_minute_ago.strftime("%Y/%m/%d %H:%M:%S")}'
 
     creds = get_credentials()
     service = build('gmail', 'v1', credentials=creds)
 
     try:
-        response = service.users().messages().list(userId='me', q=query).execute()
-        messages = response['messages']
-        print(f'{len(messages)} new messages received since {one_minute_ago}')
+        # Call the Gmail API to retrieve the number of unread messages
+        response = service.users().messages().list(
+            userId='me',
+            q='is:unread'
+        ).execute()
+
+        # Get the number of unread messages from the response
+        num_unread = len(response['messages'])
+        print(f'{len(num_unread)} new messages received since {one_minute_ago}')
     except HttpError as error:
         print(f'An error occurred: {error}')
-
-def print_message():
-    print("hi")
 
 # Set up a scheduler to run the email check every minute
 scheduler = BlockingScheduler()
@@ -62,5 +65,5 @@ scheduler = BlockingScheduler()
 creds = get_credentials()
 
 if creds:
-    scheduler.add_job(print_message, 'interval', seconds=1)
+    scheduler.add_job(check_email, 'interval', seconds=1)
     scheduler.start()
