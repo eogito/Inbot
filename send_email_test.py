@@ -74,5 +74,7 @@ def send_email(to, subject=None, body='', attachment=None):
         message = service.users().messages().send(
             userId='me', body={'raw': raw_message}).execute()
         print(F'Sent message to {to} Message Id: {message["id"]}')
+        return True
     except HttpError as error:
         print(F'An error occurred: {error}')
+        return False
