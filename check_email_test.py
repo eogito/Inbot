@@ -17,6 +17,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
 
+
 # Gets credentials if user is not already logged in
 def get_credentials():
     creds = None
@@ -37,6 +38,7 @@ def get_credentials():
             token.write(creds.to_json())
 
     return creds
+
 
 # Reads all unread emails and marks them as read
 def read_email():
@@ -78,6 +80,7 @@ def read_email():
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
         print(f'An error occurred: {error}')
+
 
 # Define a function to check for new emails
 def check_email():
