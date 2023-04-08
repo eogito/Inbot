@@ -50,7 +50,8 @@ def check_email():
         response = service.users().messages().list(
             userId='me',
             q='in:inbox is:unread',
-            labelIds=['INBOX']
+            labelIds=['INBOX'],
+            maxResults=500
         ).execute()
 
         # Get the number of unread messages from the response
