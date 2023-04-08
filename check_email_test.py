@@ -49,11 +49,14 @@ def check_email():
         # Call the Gmail API to retrieve the number of unread messages
         response = service.users().messages().list(
             userId='me',
-            q='is:unread'
+            q='in:inbox is:unread',
+            labelIds=['INBOX']
         ).execute()
 
         # Get the number of unread messages from the response
-        num_unread = len(response['messages'])
+        num_unread = 0
+        if 'messages' in response:
+            num_unread = len(response['messages'])
         print(f'{num_unread} new messages received since {one_minute_ago}')
     except HttpError as error:
         print(f'An error occurred: {error}')
