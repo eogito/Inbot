@@ -54,7 +54,7 @@ def check_email():
 
         # Get the number of unread messages from the response
         num_unread = len(response['messages'])
-        print(f'{len(num_unread)} new messages received since {one_minute_ago}')
+        print(f'{num_unread} new messages received since {one_minute_ago}')
     except HttpError as error:
         print(f'An error occurred: {error}')
 
