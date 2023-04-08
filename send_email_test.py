@@ -65,9 +65,14 @@ def send_email(to, subject, body, attachment_path=None):
     except HttpError as error:
         print(F'An error occurred: {error}')
 
+
+email = input("Enter email:")
+sub = input("Enter subject:")
+bod = input("Enter body:")
+path = input("file path")
 send_email(
-    to='felix.zhao2@student.tdsb.on.ca',
-    subject='Test email with attachment',
-    body='This is a test email with an attachment.',
-    attachment_path='C:/Users/Felix/Downloads/cat1.jpg'
+    to=email,
+    subject=sub,
+    body=bod,
+    attachment_path=path
 )
