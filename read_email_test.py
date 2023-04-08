@@ -39,31 +39,41 @@ def readEmail():
     creds = get_credentials()
     # Call the Gmail API
     service = build('gmail', 'v1', credentials=creds)
-    results = service.users().messages().list(maxResults=500, userId='me', labelIds=['INBOX'], q='is:unread').execute()
+    results = service.users().messages().list(maxResults=500, userId='me', labelIds=['INBOX'],
+                                              q='is:unread').execute()
 
     try:
         messages = results.get('messages', [])
         if not messages:
             print("You have no new messages.")
         else:
-            msg_count = 0
-            for message in messages:
+            for message in messages[::-1]:
                 msg = service.users().messages().get(userId='me', id=message['id']).execute()
+                # Mark all emails as read
+                service.users().messages().modify(userId='me', id=message['id'],
+                                                  body={'removeLabelIds': ['UNREAD']}).execute()
                 email_data = msg['payload']['headers']
                 for values in email_data:
                     name = values['name']
                     if name == "From":
                         from_name = values['value']
                         print("You have a new message from: " + from_name)
+
+                        # Get email subject
+                        subject = ""
+                        for val in email_data:
+                            if val['name'] == "Subject":
+                                subject = val['value']
+                        if subject == "":
+                            subject = "(No Subject)"
+
+                        print("Subject:", html.unescape(subject))
                         print(html.unescape(msg['snippet']))
                         print('\n')
-                msg_count += 1
-            print("You have", msg_count, "new messages.")
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
         print(f'An error occurred: {error}')
 
 
-if __name__ == '__main__':
-    readEmail()
+readEmail()
