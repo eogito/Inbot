@@ -38,7 +38,7 @@ def get_credentials():
 
     return creds
 
-def send_email(to, subject, body, attachment_path=None):
+def send_email(to, subject=None, body=None, attachment_path=None):
     creds = get_credentials()
     service = build('gmail', 'v1', credentials=creds)
 
@@ -64,15 +64,3 @@ def send_email(to, subject, body, attachment_path=None):
         print(F'Sent message to {to} Message Id: {message["id"]}')
     except HttpError as error:
         print(F'An error occurred: {error}')
-
-
-email = input("Enter email:")
-sub = input("Enter subject:")
-bod = input("Enter body:")
-path = input("file path")
-send_email(
-    to=email,
-    subject=sub,
-    body=bod,
-    attachment_path=path
-)

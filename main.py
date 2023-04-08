@@ -15,5 +15,9 @@ async def on_ready():
 async def hello(ctx):
     await ctx.respond("Hey!")
 
+@bot.slash_command(name="send", description="Send an email")
+async def hello(ctx):
+    await ctx.respond("Hey!")
+
 
 bot.run(os.getenv('TOKEN'))  # run the bot with the token
