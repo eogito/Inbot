@@ -27,7 +27,7 @@ async def email(
         attachment: discord.Option(discord.SlashCommandOptionType.attachment, "Add attachments", required = False, default = None)
     ):
     send_email(recipient_email, subject, body, attachment)
-    await ctx.send(f"Email sent to {recipient_email} with subject '{subject}'!")
+    await ctx.respond(f"Email sent to {recipient_email} with subject '{subject}'!")
 
 @bot.slash_command(name="test")
 async def command(ctx, file: discord.SlashCommandOptionType.attachment):
