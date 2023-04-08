@@ -7,10 +7,12 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-# Date and time
-from datetime import datetime, timezone, timedelta
-# Task scheduler
-from apscheduler.schedulers.blocking import BlockingScheduler
+# Base 64 for attachments
+import base64
+# Send emails
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
@@ -36,38 +38,36 @@ def get_credentials():
 
     return creds
 
-# Define a function to check for new emails
-def check_email():
-    now = datetime.now(timezone.utc)
-    one_minute_ago = now - timedelta(seconds=1)
-    query = f'after:{one_minute_ago.strftime("%Y/%m/%d %H:%M:%S")}'
-
+def send_email(to, subject, body, attachment_path=None):
     creds = get_credentials()
     service = build('gmail', 'v1', credentials=creds)
 
+    # Create a new email message with attachments
+    message = MIMEMultipart()
+    message['to'] = to
+    message['subject'] = subject
+    message.attach(MIMEText(body))
+
+    # Checks attachment path and adds attachment if specified
+    if attachment_path:
+        with open(attachment_path, 'rb') as attachment:
+            part = MIMEApplication(attachment.read(), Name=os.path.basename(attachment_path))
+            part['Content-Disposition'] = f'attachment; filename="{os.path.basename(attachment_path)}"'
+            message.attach(part)
+    
+    # Convert to sendable format
+    raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+
+    # Send the email with the Gmail API
     try:
-        # Call the Gmail API to retrieve the number of unread messages
-        response = service.users().messages().list(
-            userId='me',
-            q='in:inbox is:unread',
-            labelIds=['INBOX'],
-            maxResults=500
-        ).execute()
-
-        # Get the number of unread messages from the response
-        num_unread = 0
-        if 'messages' in response:
-            num_unread = len(response['messages'])
-        print(f'{num_unread} new messages received since {one_minute_ago}')
+        message = service.users().messages().send(userId='me', body={'raw': raw_message}).execute()
+        print(F'Sent message to {to} Message Id: {message["id"]}')
     except HttpError as error:
-        print(f'An error occurred: {error}')
+        print(F'An error occurred: {error}')
 
-# Set up a scheduler to run the email check every minute
-scheduler = BlockingScheduler()
-
-# Test
-creds = get_credentials()
-
-if creds:
-    scheduler.add_job(check_email, 'interval', seconds=1)
-    scheduler.start()
+send_email(
+    to='felix.zhao2@student.tdsb.on.ca',
+    subject='Test email with attachment',
+    body='This is a test email with an attachment.',
+    attachment_path='C:/Users/Felix/Downloads/cat1.jpg'
+)
