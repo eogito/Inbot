@@ -2,7 +2,6 @@ from __future__ import print_function
 
 import os.path
 
-from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -13,13 +12,15 @@ import base64
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
-from email.mime.base import MIMEBase
-import discord
+import requests
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
+SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly',
+          'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
 
 # Gets credentials if user is not already logged in
+
+
 def get_credentials():
     creds = None
 
@@ -40,7 +41,8 @@ def get_credentials():
 
     return creds
 
-def send_email(to, subject=None, body=None, attachment=None):
+
+def send_email(to, subject=None, body='', attachment=None):
     creds = get_credentials()
     service = build('gmail', 'v1', credentials=creds)
 
@@ -48,24 +50,31 @@ def send_email(to, subject=None, body=None, attachment=None):
     message = MIMEMultipart()
     message['to'] = to
     message['subject'] = subject
-    message.attach(MIMEText(body))
+    if body:
+        message.attach(MIMEText(body))
 
     # Checks attachment path and adds attachment if specified
     if attachment:
-        file = discord.File(attachment)
-        attachment = MIMEBase('application', 'octet-stream')
-        attachment.set_payload(file.read())
+        url = str(attachment)
+        file = requests.get(url)
+        if file.status_code != 200:
+            print("Failed to download attachment from URL")
+        else:
+            content_type = file.headers["content-type"]
+            filename = "attachment." + content_type.split("/")[-1]
+            attachment_data = MIMEApplication(file.content, _subtype=content_type.split("/")[-1])
+            attachment_data.add_header('Content-Disposition', 'attachment', filename=filename)
+            message.attach(attachment_data)
 
-        filename = os.path.basename(attachment)
-        attachment.add_header('Content-Disposition', 'attachment', filename=filename)
-        message.attach(attachment)
-    
     # Convert to sendable format
     raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
 
     # Send the email with the Gmail API
     try:
-        message = service.users().messages().send(userId='me', body={'raw': raw_message}).execute()
+        message = service.users().messages().send(
+            userId='me', body={'raw': raw_message}).execute()
         print(F'Sent message to {to} Message Id: {message["id"]}')
+        return True
     except HttpError as error:
         print(F'An error occurred: {error}')
+        return False
