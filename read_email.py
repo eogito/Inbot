@@ -88,5 +88,5 @@ creds = get_credentials()
 service = build('gmail', 'v1', credentials=creds)
 
 if creds:
-    scheduler.add_job(read_email, 'interval', seconds=1)
+    scheduler.add_job(read_email, 'interval', seconds=60)
     scheduler.start()
