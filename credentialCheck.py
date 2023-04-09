@@ -24,7 +24,7 @@ mycursor=mydb.cursor()
 
 def credentialByTag(discordTag):
     creds = None
-
+    #query
     query = "SELECT * FROM customers WHERE name = %s;"
     val = (discordTag,)
     mycursor.execute(query, val)
