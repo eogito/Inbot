@@ -17,14 +17,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 import requests
 
-# Assume that token is a JSON string stored in your database
-token = ''
+SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly',
+          'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
 
-# Convert the JSON string to a dictionary
-info = json.loads(token)
+flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+creds = flow.run_local_server(port=0)
 
-# Create a Credentials object from the dictionary
-creds = Credentials.from_authorized_user_info(info)
 service = build('gmail', 'v1', credentials=creds)
 
 # Create a new email message with attachments
