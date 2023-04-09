@@ -31,7 +31,8 @@ def credential_by_tag(discordTag):
     result = mycursor.fetchall()
 
     if len(result)!=0 and result!=None:
-        info=json.load(result[1])
+        print(result)
+        info=json.load(result[0][1])
         creds = Credentials.from_authorized_user_info(info=info, scopes=SCOPES)
 
     if not creds or not creds.valid:
