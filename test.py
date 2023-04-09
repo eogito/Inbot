@@ -40,6 +40,6 @@ raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
 try:
     message = service.users().messages().send(
         userId='me', body={'raw': raw_message}).execute()
-    print(F'Sent message to {to} Message Id: {message["id"]}')
+    print(F'Sent message to Message Id: {message["id"]}')
 except HttpError as error:
     print(F'An error occurred: {error}')
