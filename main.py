@@ -48,9 +48,12 @@ async def read(ctx):
     await ctx.respond("Reading emails...")
     while True:
         email_data = get_emails()
+        print(email_data)
         if email_data:
             for mail in email_data:
-                await ctx.respond(f"{mail[0]}\n{mail[1]}\n{mail[2]}")
+                message = f"{mail[0]}\n{mail[1]}\n\n{mail[2]}"
+                message = "%.2000s" % message
+                await ctx.respond(message)
         await asyncio.sleep(10)
 
 bot.run(os.getenv('TOKEN'))  # run the bot with the token

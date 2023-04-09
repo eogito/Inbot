@@ -5,6 +5,7 @@ import html
 import os.path
 from email import message_from_bytes
 
+from bs4 import BeautifulSoup
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -58,35 +59,34 @@ def get_emails():
             # Mark all emails as read
             service.users().messages().modify(userId='me', id=message['id'],
                                               body={'removeLabelIds': ['UNREAD']}).execute()
-            email_data = msg['payload']['headers']
-            for values in email_data:
-                name = values['name']
-                if name == "From":
-                    from_name = values['value']
-                    # print("You have a new message from: " + from_name)
+            payload = msg['payload']
+            headers = payload['headers']
 
-                    # Get email subject
-                    subject = ""
-                    for val in email_data:
-                        if val['name'] == "Subject":
-                            subject = val['value']
-                    if subject == "":
-                        subject = "(No Subject)"
+            sender = ''
+            subject = ''
 
-                    # Get email message body
-                    if 'parts' in msg['payload']:
-                        parts = msg['payload']['parts']
-                        data = parts[0]['body']['data']
-                    else:
-                        data = msg['payload']['body']['data']
-                    message = message_from_bytes(base64.urlsafe_b64decode(data.encode('UTF-8')))
-                    body = message.get_payload()
-                    if len(body) > 2000:
-                        body = msg['snippet']
-                    emails.append(
-                        ["You have a new message from: " + from_name, "Subject: " + html.unescape(subject),
-                         html.unescape(body)])
-                    # print("Subject:", html.unescape(subject))
-                    # print(html.unescape(msg['snippet']))
+            for header in headers:
+                if header['name'] == 'From':
+                    sender = header['value']
+
+            for header in headers:
+                if header['name'] == 'Subject':
+                    subject = header['value']
+            if subject == "":
+                subject = "(No Subject)"
+
+            body = msg['snippet']
+            # for part in payload['parts']:
+            #     if part['filename'] == '':
+            #         data = part['body']['data']
+            #         # specify the encoding explicitly when decoding the data
+            #         decoded_data = base64.urlsafe_b64decode(data).decode('utf-8')
+            #         soup = BeautifulSoup(decoded_data, "lxml")
+            #         for img in soup.findAll('img'):
+            #             img.decompose()
+            #         body_parts = soup.find_all('body')
+            #         for parts in body_parts:
+            #             body = parts.get_text()
+            emails.append(
+                ["You have a new message from: " + sender, "Subject: " + html.unescape(subject), html.unescape(body) + "..."])
     return emails
-
