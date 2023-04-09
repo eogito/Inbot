@@ -18,19 +18,23 @@ async def on_ready():
 async def hello(ctx):
     await ctx.respond("Hey!")
 
-# @bot.slash_command(name="send", description="Send an email")
-# async def email(
-#         ctx,
-#         recipient_email: discord.Option(str, "Enter recipient email", required = True, default = None),
-#         subject: discord.Option(str, "Enter subject", required = False, default = None),
-#         body: discord.Option(str, "Enter email body", required = False, default = None),
-#         attachment: discord.Option(discord.SlashCommandOptionType.attachment, "Add attachments", required = False, default = None)
-#     ):
-#     send_email(recipient_email, subject, body, attachment)
-#     await ctx.send(f"Email sent to {recipient_email} with subject '{subject}'!")
+@bot.slash_command(name="send", description="Send an email")
+async def email(
+        ctx,
+        recipient_email: str,
+        subject: discord.Option(str, "Enter subject", required = False, default = None),
+        body: discord.Option(str, "Enter email body", required = False, default = None),
+        attachment: discord.Option(discord.SlashCommandOptionType.attachment, "Add attachments", required = False, default = None)
+    ):
+    if send_email(recipient_email, subject, body, attachment):
+        await ctx.respond(f"Email sent to {recipient_email} with subject '{subject}'!")
+    else:
+        await ctx.respond(f"Something went wrong, please try again.")
+    
 
 @bot.slash_command(name="test")
 async def command(ctx, file: discord.SlashCommandOptionType.attachment):
+    print(str(file))
     await ctx.respond(str(file))
 
 
