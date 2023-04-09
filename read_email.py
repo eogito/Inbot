@@ -1,7 +1,9 @@
 from __future__ import print_function
 
+import base64
 import html
 import os.path
+from email import message_from_bytes
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -70,8 +72,20 @@ def get_emails():
                             subject = val['value']
                     if subject == "":
                         subject = "(No Subject)"
-                    emails.append(["You have a new message from: " + from_name, "Subject: " + html.unescape(subject),
-                                   html.unescape(msg['snippet'])])
+
+                    # Get email message body
+                    if 'parts' in msg['payload']:
+                        parts = msg['payload']['parts']
+                        data = parts[0]['body']['data']
+                    else:
+                        data = msg['payload']['body']['data']
+                    message = message_from_bytes(base64.urlsafe_b64decode(data.encode('UTF-8')))
+                    body = message.get_payload()
+                    if len(body) > 2000:
+                        body = msg['snippet']
+                    emails.append(
+                        ["You have a new message from: " + from_name, "Subject: " + html.unescape(subject),
+                         html.unescape(body)])
                     # print("Subject:", html.unescape(subject))
                     # print(html.unescape(msg['snippet']))
     return emails

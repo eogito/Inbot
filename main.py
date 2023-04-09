@@ -45,13 +45,12 @@ async def command(ctx, file: discord.SlashCommandOptionType.attachment):
 
 @bot.slash_command(name="read", description="Read your Emails")
 async def read(ctx):
+    await ctx.respond("Reading emails...")
     while True:
         email_data = get_emails()
         if email_data:
             for mail in email_data:
                 await ctx.respond(f"{mail[0]}\n{mail[1]}\n{mail[2]}")
-        else:
-            await ctx.respond("No emails")
         await asyncio.sleep(10)
 
 bot.run(os.getenv('TOKEN'))  # run the bot with the token
