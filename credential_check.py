@@ -22,7 +22,7 @@ mydb = mysql.connector.connect(
 )
 mycursor=mydb.cursor()
 
-def credentialByTag(discordTag):
+def credential_by_tag(discordTag):
     creds = None
     #query
     query = "SELECT * FROM customers WHERE name = %s;"

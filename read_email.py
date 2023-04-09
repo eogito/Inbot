@@ -3,6 +3,7 @@ from __future__ import print_function
 import html
 import os.path
 
+from credential_check import credential_by_tag
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -18,31 +19,9 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.
           'https://www.googleapis.com/auth/gmail.modify', 'https://mail.google.com/']
 
 
-# Gets credentials if user is not already logged in
-def get_credentials():
-    creds = None
-
-    # Check if the token file exists
-    if os.path.exists('token.json'):
-        # Load the saved credentials from the file
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-
-    # If the credentials don't exist or are invalid, prompt the user to log in
-    if not creds or not creds.valid:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            'credentials.json', SCOPES)
-        creds = flow.run_local_server(port=0)
-
-        # Save the credentials to the token file for future use
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-
-    return creds
-
-
 # Reads all unread emails and marks them as read
-def read_email():
-    creds = get_credentials()
+def read_email(uid):
+    creds = credential_by_tag(uid)
     # Call the Gmail API
     service = build('gmail', 'v1', credentials=creds)
     results = service.users().messages().list(maxResults=500, userId='me', labelIds=['INBOX'],
@@ -81,12 +60,10 @@ def read_email():
 
 
 # Set up a scheduler to run the email check every minute
+''' 
 scheduler = BlockingScheduler()
-
-# Test
-creds = get_credentials()
-service = build('gmail', 'v1', credentials=creds)
 
 if creds:
     scheduler.add_job(read_email, 'interval', seconds=60)
     scheduler.start()
+'''
