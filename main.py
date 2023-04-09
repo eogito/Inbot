@@ -24,9 +24,11 @@ async def email(
         recipient_email: str,
         subject: discord.Option(str, "Enter subject", required = False, default = None),
         body: discord.Option(str, "Enter email body", required = False, default = None),
-        attachment: discord.Option(discord.SlashCommandOptionType.attachment, "Add attachments", required = False, default = None)
+        attachment: discord.Option(discord.SlashCommandOptionType.attachment, "Add attachments", required = False, default = None),
     ):
-    if send_email(recipient_email, subject, body, attachment):
+    print(str(ctx.author))
+    if send_email(uid=str(ctx.author), to=recipient_email, subject=subject, body=body, attachment=attachment):
+
         await ctx.respond(f"Email sent to {recipient_email} with subject '{subject}'!")
     else:
         await ctx.respond(f"Something went wrong, please try again.")
