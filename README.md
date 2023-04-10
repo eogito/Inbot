@@ -1,6 +1,11 @@
 # Inbot
 Inbot is a discord bot submission to LyonHacks III.
-
+## Dependencies
+- py-cord
+- google-api-python-client
+- google-auth-httplib2
+- google-auth-oauthlib
+- requests
 ## How to use it
 - First go to the Discord Developer Portal: https://discord.com/developers/applications
 - Click "New Application" to make a new bot
