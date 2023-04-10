@@ -12,7 +12,8 @@ We first made a Discord bot in Python that can accept slash commands. Then we re
 ## Challenges we ran into
 
 Badly documented code
-_Someone's_  sleep schedule
+_Someone's(Alex's)_  sleep schedule
+No previous experience with API's, databases and setting up webservers.
 
 ## Accomplishments that we're proud of
 
