@@ -1,6 +1,13 @@
 # Inbot
 Inbot is a discord bot submission to LyonHacks III.
 
+## How to use it
+- First go to the Discord Developer Portal: https://discord.com/developers/applications
+- Click "New Application" to make a new bot ![New application button](https://cdn.discordapp.com/attachments/1091179196425965668/1094807448361127936/image.png)
+- Navigate to the "Bot" section and copy the token ![Bot token](https://cdn.discordapp.com/attachments/1091179196425965668/1094807448545656883/image.png)
+- Navigate to "OAuth2" and "URL Generator" and select these 2 options and invite the bot to a server [Permissions](https://cdn.discordapp.com/attachments/1091179196425965668/1094807448767959081/image.png)
+- Finally change the .env file to contain your bot token and run main.py
+
 ## What it does
 
 Inbot uses Gmail API and py-cord in order to create a bot that functions as a inbox. The bot has 2 main functions, reading emails and sending emails. Reading emails sends you and message every time you receieve a new email, containing the sender, subject and body content. After, the bot makes the email read. Sending emails allows users to send emails to 1 specified email address. They are able to attach 1 file.
@@ -20,7 +27,7 @@ An almost-functional SQL webserver
 
 ## What we learned
 
-We learned a lot about how Python works as a language, and also to connect it with making a Discord bot.  In addition, the Gmail API taught us a lot about the security and safety precautions used by Google to keep your private mail safe. We also learned how to use SQL with Python, despite not using it, and it provides us with the basic knowledge for future projects.
+We learned a lot about how Python works as a language, and also to connect it with making a Discord bot. In addition, the Gmail API taught us a lot about the security and safety precautions used by Google to keep your private mail safe. We also learned how to use SQL with Python, despite not using it, and it provides us with the basic knowledge for future projects.
 
 ## What's next for Inbot
 
