@@ -25,6 +25,7 @@ async def email(
         attachment: discord.Option(discord.SlashCommandOptionType.attachment, "Add attachments", required=False,
                                    default=None)
 ):
+    await ctx.respond("Sending email...")
     if send_email(recipient_email, subject, body, attachment):
         await ctx.respond(f"Email sent to {recipient_email} with subject '{subject}'!")
     else:
