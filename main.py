@@ -33,21 +33,18 @@ async def email(
 
 @bot.slash_command(name="read", description="Read your Emails")
 async def read(ctx):
-    if isinstance(ctx.channel, discord.DMChannel):
-        global reading
-        reading = True
-        await ctx.respond("Reading emails...")
-        while reading:
-            email_data = get_emails()
-            print(email_data)
-            if email_data:
-                for mail in email_data:
-                    message = f"{mail[0]}\n{mail[1]}\n\n{mail[2]}"
-                    message = "%.2000s" % message
-                    await ctx.respond(message)
-            await asyncio.sleep(10)
-    else:
-        await ctx.respond("This command can only be used in DMs.")
+    global reading
+    reading = True
+    await ctx.respond("Reading emails...")
+    while reading:
+        email_data = get_emails()
+        print(email_data)
+        if email_data:
+            for mail in email_data:
+                message = f"{mail[0]}\n{mail[1]}\n\n{mail[2]}"
+                message = "%.2000s" % message
+                await ctx.respond(message)
+        await asyncio.sleep(10)
 
 
 @bot.slash_command(name="stop", description="Stop Reading Emails")
