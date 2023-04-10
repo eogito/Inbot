@@ -18,11 +18,6 @@ async def on_ready():
     print(f"{bot.user} is ready and online!")
 
 
-@bot.slash_command(name="hello", description="Say hello to the bot")
-async def hello(ctx):
-    await ctx.respond("Hey!")
-
-
 @bot.slash_command(name="send", description="Send an email")
 async def email(
         ctx,
@@ -36,12 +31,6 @@ async def email(
         await ctx.respond(f"Email sent to {recipient_email} with subject '{subject}'!")
     else:
         await ctx.respond(f"Something went wrong, please try again.")
-
-
-@bot.slash_command(name="test")
-async def command(ctx, file: discord.SlashCommandOptionType.attachment):
-    print(str(file))
-    await ctx.respond(str(file))
 
 
 @bot.slash_command(name="read", description="Read your Emails")
@@ -65,5 +54,7 @@ async def stop(ctx):
     global reading
     reading = False
     await ctx.respond("Emails have been stopped")
+
+
 
 bot.run(os.getenv('TOKEN'))  # run the bot with the token
