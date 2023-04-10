@@ -3,9 +3,12 @@ Inbot is a discord bot submission to LyonHacks III.
 
 ## How to use it
 - First go to the Discord Developer Portal: https://discord.com/developers/applications
-- Click "New Application" to make a new bot ![New application button](https://cdn.discordapp.com/attachments/1091179196425965668/1094807448361127936/image.png)
-- Navigate to the "Bot" section and copy the token ![Bot token](https://cdn.discordapp.com/attachments/1091179196425965668/1094807448545656883/image.png)
-- Navigate to "OAuth2" and "URL Generator" and select these 2 options and invite the bot to a server [Permissions](https://cdn.discordapp.com/attachments/1091179196425965668/1094807448767959081/image.png)
+- Click "New Application" to make a new bot
+- ![New application button](https://cdn.discordapp.com/attachments/1091179196425965668/1094807448361127936/image.png)
+- Navigate to the "Bot" section and copy the token
+- ![Bot token](https://cdn.discordapp.com/attachments/1091179196425965668/1094807448545656883/image.png)
+- Navigate to "OAuth2" and "URL Generator" and select these 2 options and invite the bot to a server
+- ![Permissions](https://cdn.discordapp.com/attachments/1091179196425965668/1094807448767959081/image.png)
 - Finally change the .env file to contain your bot token and run main.py
 
 ## What it does
