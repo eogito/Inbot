@@ -1,20 +1,11 @@
 from __future__ import print_function
 
-import base64
 import html
 import os.path
-from email import message_from_bytes
 
-from bs4 import BeautifulSoup
-from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-# Date and time
-from datetime import datetime, timezone, timedelta
-# Task scheduler
-from apscheduler.schedulers.blocking import BlockingScheduler
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly',
@@ -76,17 +67,6 @@ def get_emails():
                 subject = "(No Subject)"
 
             body = msg['snippet']
-            # for part in payload['parts']:
-            #     if part['filename'] == '':
-            #         data = part['body']['data']
-            #         # specify the encoding explicitly when decoding the data
-            #         decoded_data = base64.urlsafe_b64decode(data).decode('utf-8')
-            #         soup = BeautifulSoup(decoded_data, "lxml")
-            #         for img in soup.findAll('img'):
-            #             img.decompose()
-            #         body_parts = soup.find_all('body')
-            #         for parts in body_parts:
-            #             body = parts.get_text()
             emails.append(
                 ["You have a new message from: " + sender, "Subject: " + html.unescape(subject), html.unescape(body) + "..."])
     return emails

@@ -1,17 +1,15 @@
-import time
-
 import discord
-import os  # default module
+import os
 import asyncio
 from dotenv import load_dotenv
 
-# test
-from send_email_test import send_email
+from send_email import send_email
 from read_email import get_emails
 
 load_dotenv()  # load all the variables from the env file
 bot = discord.Bot()
 reading = False
+
 
 @bot.event
 async def on_ready():
@@ -54,7 +52,6 @@ async def stop(ctx):
     global reading
     reading = False
     await ctx.respond("Emails have been stopped")
-
 
 
 bot.run(os.getenv('TOKEN'))  # run the bot with the token
